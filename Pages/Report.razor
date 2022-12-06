@@ -1,0 +1,244 @@
+﻿@using System.Net.Http.Json
+@using JanGym.Data;
+@page "/report"
+
+@attribute [Authorize]
+
+
+<MudDataGrid RowsPerPage="1000" Style="opacity:0.9" T="ReportShowModel" MultiSelection="true" Items="@ReportTrainee" SortMode="SortMode.Multiple" Filterable="true" QuickFilter="@_quickFilter"
+             Hideable="true" RowClick="@RowClicked" SelectedItemsChanged="@SelectedItemsChanged">
+    <ToolBarContent>
+        <MudText Typo="Typo.h6">تقرير المتدربين</MudText>
+        <MudSpacer />
+        <MudTextField @bind-Value="_searchString" Placeholder="Search" Adornment="Adornment.Start" Immediate="true"
+                      AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+    </ToolBarContent>
+    <Columns>
+        <Column T="ReportShowModel" Field="Name" Title="الاسم" Sortable="false" Filterable="false" />
+        <Column T="ReportShowModel" Field="Phone" Title="الجوال" />
+        <Column T="ReportShowModel" Field="Nationality" Title="الجنسية" />
+        <Column T="ReportShowModel" Field="Date" Title="تاريخ تسجيل العضوية" SortBy="@_sortBy" />
+        <Column T="ReportShowModel" CellStyleFunc="Style" Field="DateEnd" Title="انتهاء الاشتراك" />
+        <Column T="ReportShowModel" CellStyleFunc="StyleNotPaid" Field="Unpaid" Title="غير مدفوع" />
+        <Column T="ReportShowModel" Field="Paid" Title="المدفوع" />
+        <Column T="ReportShowModel" Field="UserBlocked" Title="محظور" />
+
+        <Column T="ReportShowModel" CellClass="d-flex justify-end">
+            <CellTemplate>
+                <MudIconButton Size="@Size.Small" Icon="@Icons.Outlined.Edit" OnClick="(w)=>{ToTraineePage( context.Item.Id);}" />
+                @*                <MudIconButton Size="@Size.Small" Icon="@Icons.Outlined.Delete" OnClick="(w)=>{DeleteSubscribe(context.Item);}" />
+                *@
+            </CellTemplate>
+        </Column>
+
+
+    </Columns>
+    <PagerContent>
+        <MudDataGridPager T="ReportShowModel" />
+    </PagerContent>
+</MudDataGrid>
+
+
+
+
+@code {
+
+    private List<ReportShowModel> ReportTrainee = new List<ReportShowModel>();
+
+
+    [Inject]
+    public IToastService ToastService { get; set; }
+    public List<TraineeInfoModel> TraineeModel { get; set; } = new List<TraineeInfoModel>();
+    [Inject]
+    public ApplicationDbContext DbContext { get; set; }
+    [Inject]
+    public SubscribeRepository subscribeRepository { get; set; }
+
+    [CascadingParameter]
+    public IModalService ModalService { get; set; }
+
+    protected override void OnInitialized()
+    {
+        TraineeModel = DbContext.RegisterNewTraineeModel.Include(w => w.SubscribeTrainee).ToList();
+
+        foreach (var traineeInfo in TraineeModel)
+        {
+            ReportShowModel reportShowModel = new ReportShowModel();
+
+            reportShowModel.Id = traineeInfo.Id;
+            reportShowModel.Name = traineeInfo.Name;
+            reportShowModel.Nationality = traineeInfo.Nationality;
+            reportShowModel.Phone = traineeInfo.Phone;
+            reportShowModel.Date = traineeInfo.Date;
+            reportShowModel.Note = traineeInfo.Note;
+            reportShowModel.UserBlocked = traineeInfo.UserBlocked;
+
+            if (traineeInfo.SubscribeTrainee != null && traineeInfo.SubscribeTrainee.Count >= 1)
+            {
+
+                foreach (var sub in traineeInfo.SubscribeTrainee)
+                {
+                    reportShowModel.Unpaid += sub.Unpaid;
+                    reportShowModel.Paid += sub.Paid.Value;
+                    reportShowModel.Total += sub.Total.Value;
+                    reportShowModel.SubscriptionPeriod += sub.SubscriptionPeriod;
+                }
+                subscribeRepository.CheckIfSubscbiveIsActive(traineeInfo.SubscribeTrainee, out SubscribeModel subscribeModel);
+
+                reportShowModel.DateEnd = subscribeModel.DateEnd;
+                reportShowModel.Date = subscribeModel.Date;
+
+
+            }
+            else
+            {
+                reportShowModel.Unpaid = 0;
+                reportShowModel.Paid = 0;
+                reportShowModel.Date = new DateTime();
+                reportShowModel.DateEnd = new DateTime();
+                reportShowModel.Total = 0;
+
+            }
+
+            ReportTrainee.Add(reportShowModel);
+
+
+
+        }
+
+        string d = "ww";
+
+    }
+
+
+    private async void ToTraineePage(int id)
+    {
+
+
+        ModalParameters param = new ModalParameters();
+        if (id != 0)
+        {
+            param.Add("IdModal", id);
+        }
+
+        var res = ModalService.Show<RegisterAndEditTrainee>("متأكد ", param, new ModalOptions { HideHeader = true, Size = ModalSize.ExtraLarge, AnimationType = ModalAnimationType.FadeInOut });
+
+        var result = await res.Result;
+
+        if (result.Confirmed)
+        {
+            StateHasChanged();
+        }
+
+
+
+    }
+
+
+    // note: this method its havey on load
+    private Func<ReportShowModel, string> Style => x =>
+    {
+        string style = "";
+
+        foreach (var trainee in TraineeModel)
+        {
+            if (x != null)
+            {
+                if (subscribeRepository.CheckIfSubscbiveIsActive(trainee.SubscribeTrainee, out SubscribeModel sub))
+                {
+                    var daysLeft = (x.DateEnd - DateTime.Now).TotalDays;
+
+                    if (daysLeft > 4)
+                    {
+                        style = "background-color:#29a329";
+
+
+
+                    }
+
+                    if (daysLeft <= 4)
+                    {
+                        style = "background-color:#990000";
+
+
+                    }
+
+                    if (daysLeft < 0)
+                    {
+                        style = "";
+
+                    }
+
+
+                }
+            }
+        }
+
+
+
+
+
+        return style;
+
+    };
+
+
+
+    private Func<ReportShowModel, string> StyleNotPaid => x =>
+       {
+           string style = "";
+
+           if (x.Unpaid != null && x.Unpaid != 0)
+           {
+               style = "background-color:#660000";
+
+           }
+           return style;
+
+       };
+
+
+
+
+    private string _searchString;
+    private bool _sortNameByLength;
+    private List<string> _events = new();
+    // custom sort by name length
+    private Func<ReportShowModel, object> _sortBy => x =>
+    {
+        if (_sortNameByLength)
+            return x.Name.Length;
+        else
+            return x.Name;
+    };
+    // quick filter - filter gobally across multiple columns with the same input
+    private Func<ReportShowModel, bool> _quickFilter => x =>
+    {
+        if (string.IsNullOrWhiteSpace(_searchString))
+            return true;
+
+        if (x.Phone.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+
+        if (x.Name.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+
+        if ($"{x.Phone} {x.AddedBy} {x.Name}".Contains(_searchString))
+            return true;
+
+        return false;
+    };
+
+
+
+    // events
+    void RowClicked(DataGridRowClickEventArgs<ReportShowModel> args)
+    {
+        _events.Insert(0, $"Event = RowClick, Index = {args.RowIndex}, Data = {System.Text.Json.JsonSerializer.Serialize(args.Item)}");
+    }
+
+    void SelectedItemsChanged(HashSet<ReportShowModel> items)
+    {
+        _events.Insert(0, $"Event = SelectedItemsChanged, Data = {System.Text.Json.JsonSerializer.Serialize(items)}");
+    }
+}

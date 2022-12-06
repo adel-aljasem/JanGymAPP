@@ -1,0 +1,42 @@
+﻿@inject NavigationManager nav
+
+
+@if (NotAuthorized) 
+{
+    <p>المعذرة لايوجد لديك صلاحية الوصول لهذه الصحفة </p>
+}
+
+
+@code {
+    [Parameter]
+    public string NavTo { get; set; }
+
+    [CascadingParameter]
+    public Task<AuthenticationState> AuthenticationState { get; set; }
+
+
+
+    public bool NotAuthorized { get; set; } = false;
+
+    protected async override Task OnInitializedAsync()
+    {
+        var auth = await AuthenticationState;
+
+
+        if (auth?.User?.Identity == null || !auth.User.Identity.IsAuthenticated)
+        {
+            var returnUrl = nav.ToBaseRelativePath(nav.Uri);
+
+            
+            
+                nav.NavigateTo(NavTo);
+            
+           
+        }
+        else
+        {
+            NotAuthorized = true;
+        }
+    }
+
+}

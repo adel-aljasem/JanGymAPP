@@ -1,0 +1,30 @@
+﻿@inherits LayoutComponentBase
+
+<BlazoredToasts  />
+
+
+<PageTitle>JanGym</PageTitle>
+
+<MudThemeProvider   IsDarkMode ="true"/>
+<MudDialogProvider  />
+<MudSnackbarProvider  />
+
+
+<div class="page">
+
+    <AuthorizeView>
+        <div class="sidebar">
+            <NavMenu />
+        </div>
+    </AuthorizeView>
+
+@*<SideBar />
+*@
+
+    <main>
+
+            @Body
+    </main>
+</div>
+
+

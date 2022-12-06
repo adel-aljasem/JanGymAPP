@@ -1,0 +1,419 @@
+﻿@page "/trainee"
+
+@attribute [Authorize]
+
+
+
+<section class="u-clearfix u-image u-shading u-section-1" id="sec-ed1f" data-image-width="1280" data-image-height="853">
+    <div class="u-clearfix u-sheet u-sheet-1">
+        <div class="u-align-center u-container-style u-group u-shape-rectangle u-group-1">
+            <div class="u-container-layout u-valign-bottom-md u-valign-bottom-sm u-container-layout-1">
+                <span class="u-file-icon u-icon u-text-white u-icon-1"><img src="css/images/748137-403356d5.png" alt=""></span>
+                <h1 class="u-text u-text-default u-text-1">تسجيل متدرب جديد</h1>
+                <div class="u-align-center u-form u-form-1">
+
+                    <EditForm Model="TraineeModel" OnValidSubmit="SaveChanges" action="https://forms.nicepagesrv.com/Form/Process" class="u-clearfix u-form-spacing-28 u-form-vertical u-inner-form" source="email" name="form" style="padding: 0px;">
+                        <DataAnnotationsValidator />
+                        <div class="u-form-group u-form-name u-form-partition-factor-2">
+                            <label for="name-c6a3" class="u-label u-label-2">الاسم</label>
+                            <InputText @bind-Value="TraineeModel.Name" type="text" placeholder="ادخل اسم المتدرب هنا" id="name-c6a3" name="name" class="u-border-1 u-border-grey-30 u-grey-90 u-input u-input-rectangle u-radius-6 u-input-2" required="" />
+                        </div>
+                        <div class="u-form-group u-form-partition-factor-2">
+                            <label for="email-c6a3" class="u-label u-label-1">الجنسية</label>
+                            <InputText @bind-Value="TraineeModel.Nationality" type="text" placeholder="ادخل جنسية المتدرب هنا" id="email-c6a3" name="email" class="u-border-1 u-border-grey-30 u-grey-90 u-input u-input-rectangle u-radius-6 u-input-1" required="required" />
+                        </div>
+                        <div class="u-form-group u-form-phone u-form-group-3">
+                            <label for="phone-84d9" class="u-label u-label-3">الجوال</label>
+                            <InputText @bind-Value="TraineeModel.Phone" type="tel" pattern="\+?\d{0,3}[\s\(\-]?([0-9]{2,3})[\s\)\-]?([\s\-]?)([0-9]{3})[\s\-]?([0-9]{2})[\s\-]?([0-9]{2})" placeholder="رقم جوال المتدرب" id="phone-84d9" name="phone" class="u-border-1 u-border-grey-30 u-grey-90 u-input u-input-rectangle u-radius-6 u-input-3" />
+                       <ValidationMessage For="()=> TraineeModel.Phone"/>
+                        </div>
+                        <div class="u-form-group u-form-message">
+                            <label for="message-c6a3" class="u-label u-label-4">ملاحظة</label>
+                            <InputTextArea @bind-Value="TraineeModel.Note" placeholder="ادخل ملاحظتك على المتدرب هنا" rows="4" cols="50" id="message-c6a3" name="message" class="u-border-1 u-border-grey-30 u-grey-90 u-input u-input-rectangle u-radius-6 u-input-4"></InputTextArea>
+                        </div>
+                        <div class="u-form-checkbox u-form-group u-form-partition-factor-2 u-form-group-5">
+                            <MudCheckBox @bind-Checked="TraineeModel.UserBlocked" Size="Size.Medium" Color="Color.Secondary">حظر المتدرب</MudCheckBox>
+
+                        </div>               
+
+                        <div class="u-align-center u-form-group u-form-submit">
+                            <button type="submit" class="u-btn u-btn-round u-btn-submit u-button-style u-palette-4-base u-radius-50 u-btn-1">حفظ</button>
+                            <input value="submit" class="u-form-control-hidden">
+                        </div>
+                        <div class="u-form-send-message u-form-send-success"> Thank you! Your message has been sent. </div>
+                        <div class="u-form-send-error u-form-send-message"> Unable to send your message. Please fix errors then try again. </div>
+                        <input type="hidden" value="" name="recaptchaResponse">
+                        <input type="hidden" name="formServices" value="e9f7d5cc5d85871f7e2d425d88d612ac">
+
+                    </EditForm>
+
+
+                </div>
+
+                <a @onclick="((w)=>ToSubscirbePage(null))" class="u-border-none u-btn u-btn-round u-button-style u-custom-color-1 u-hover-feature u-hover-palette-1-light-1 u-radius-50 u-btn-3">اضافة اشتراك</a>
+                <a href="" class="u-btn u-button-style u-hover-palette-3-base u-palette-2-base u-btn-4">
+                    <span class="u-icon u-text-white u-icon-2"><svg class="u-svg-content" viewBox="0 0 512 512" x="0px" y="0px" style="width: 1em; height: 1em;"><polygon points="256,152.96 79.894,288.469 79.894,470.018 221.401,470.018 221.401,336.973 296.576,336.973 296.576,470.018 432.107,470.018 432.107,288.469"></polygon><polygon points="439.482,183.132 439.482,90.307 365.316,90.307 365.316,126.077 256,41.982 0,238.919 35.339,284.855 256,115.062 476.662,284.856 512,238.92"></polygon></svg><img></span>
+                </a>
+
+               
+            </div>
+           
+
+        </div>
+        <div class="u-form-group u-form-partition-factor-2 u-form-group-6">
+            <label for="text-779a" class="u-label u-label-6">بحث</label>
+            <input @oninput="NewSearch" @bind-value="thenewvalue" type="text" placeholder="ادخل رقم المتدرب للبحث عنه" id="das" name="text" class="u-border-1 u-border-grey-30 u-grey-90 u-input u-input-rectangle u-radius-6 u-input-5" />
+             <MudDataGrid Style="opacity:0.9;" T="SubscribeModel" EditMode="DataGridEditMode.Form" MultiSelection="false" Items="@TraineeModel.SubscribeTrainee" SortMode="SortMode.Multiple" Filterable="true"
+                             StartedEditingItem="StartEditingItem" ReadOnly="false" Hideable="true" RowClick="@RowClicked" SelectedItemsChanged="@SelectedItemsChanged" RowsPerPage="1000">
+
+                    <Columns>
+                        <Column T="SubscribeModel" IsEditable="false" Field="Date" Title="تاريخ بداية الاشتراك" Sortable="false" Filterable="false" />
+                        <Column T="SubscribeModel" IsEditable="false" CellStyleFunc="Style" Field="DateEnd" Title="تاريخ نهاية الاشتراك" />
+
+                        <Column T="SubscribeModel" IsEditable="false" Field="SubscriptionPeriod" Title="مدة الاشتراك بالايام" />
+                        <Column T="SubscribeModel" IsEditable="false" Field="Paid" Title="المدفوع" />
+
+                        <Column T="SubscribeModel" CellStyleFunc="StyleNotPaid" Field="Unpaid" Title="غير مدفوع" />
+                        <Column T="SubscribeModel" IsEditable="false" Field="Total" Title="المجموع" />
+                        <Column T="SubscribeModel" CellClass="d-flex justify-end">
+                            <CellTemplate>
+                                <MudIconButton Size="@Size.Small" Icon="@Icons.Outlined.Edit" OnClick="(w)=>{ToSubscirbePage(context.Item);}" />
+                                <MudIconButton Size="@Size.Small" Icon="@Icons.Outlined.Delete" OnClick="(w)=>{DeleteSubscribe(context.Item);}" />
+                            </CellTemplate>
+                        </Column>
+                    </Columns>
+                    <PagerContent>
+                        <MudDataGridPager T="SubscribeModel" />
+                    </PagerContent>
+                </MudDataGrid>
+
+        </div>
+
+    </div>
+
+    <div>
+     
+    </div>
+
+
+
+</section>
+
+
+@code {
+    string error = "يوجد نفس القرقم";
+
+    public List<TraineeInfoModel> TraineeInfoModels { get; set; } = new List<TraineeInfoModel>();
+
+    public TraineeInfoModel TraineeModel { get; set; } = new TraineeInfoModel();
+    [Inject]
+    public ApplicationDbContext DbContext { get; set; }
+    [CascadingParameter]
+    public IModalService ModalService { get; set; } = default!;
+
+    [Inject]
+    public IToastService ToastService { get; set; }
+
+    [CascadingParameter]
+    public Task<AuthenticationState> authenticationState { get; set; }
+
+    [Inject]
+    public SubscribeRepository subscribeRepository { get; set; }
+
+    public AuthenticationState Auth { get; set; }
+
+    public Dictionary<int, int> UnpaidForAllSubscribesList { get; set; } = new Dictionary<int, int>();
+
+    [Parameter]
+    public int IdModal { get; set; }
+
+    protected async override Task OnInitializedAsync()
+    {
+        Auth =  await authenticationState;
+
+        if(IdModal != 0)
+        {
+            TraineeModel = DbContext.RegisterNewTraineeModel.Find(IdModal);
+
+        }
+
+    }
+
+    void StartedEditingItem(SubscribeModel item)
+    {
+        _events.Insert(0, $"Event = StartedEditingItem, Data = {System.Text.Json.JsonSerializer.Serialize(item)}");
+
+    }
+
+    private async void DeleteSubscribe(SubscribeModel subscribeModel)
+    {
+        var paramter = new ModalParameters();
+        paramter.Add("subscribeModel", subscribeModel);
+
+        var res = ModalService.Show<AreYouSureModal>("", paramter);
+        var result = await res.Result;
+        if (result.Confirmed)
+        {
+
+            StateHasChanged();
+
+        }
+    }
+
+
+    private void StartEditingItem(SubscribeModel subscribeModel)
+    {
+
+
+        if (UnpaidForAllSubscribesList != null)
+        {
+            var SubUnpaid = UnpaidForAllSubscribesList.Where(w => w.Key == subscribeModel.Id).FirstOrDefault();
+
+            subscribeModel.Paid += SubUnpaid.Value;
+            subscribeRepository.Update(subscribeModel.Id);
+
+            UnpaidForAllSubscribesList.Clear();
+            foreach (var sub in TraineeModel.SubscribeTrainee)
+            {
+                UnpaidForAllSubscribesList.Add(sub.Id, sub.Unpaid);
+            }
+
+            ToastService.ShowSuccess("تم التعديل بنجاح");
+        }
+
+
+
+    }
+
+
+    private Func<SubscribeModel, string> Style => x =>
+    {
+        string style = "";
+
+        if (x != null)
+        {
+            if (subscribeRepository.CheckIfSubsribeIsActiveById(x.Id))
+            {
+                var daysLeft = (x.DateEnd - DateTime.Now).TotalDays;
+
+                if (daysLeft > 7)
+                {
+                    style = "background-color:#33cc33";
+
+
+
+                }
+                if (daysLeft <= 4)
+                {
+                    style = "background-color:#990000";
+
+                }
+                else
+                {
+                    style = "";
+                }
+            }
+        }
+
+        return style;
+
+    };
+
+
+
+    private Func<SubscribeModel, string> StyleNotPaid => x =>
+       {
+           string style = "";
+
+           if (x.Unpaid != null && x.Unpaid != 0)
+           {
+               style = "background-color:#660000";
+
+           }
+           return style;
+
+       };
+
+
+
+
+    private async void ToSubscirbePage(SubscribeModel subscribeModel)
+    {
+
+
+        ModalParameters param = new ModalParameters();
+        if(subscribeModel != null)
+        {
+            param.Add("IdSub", subscribeModel.Id);
+        }
+        param.Add("TraineeInfo", TraineeModel);
+
+        if (TraineeModel.Name == null)
+        {
+            ToastService.ShowWarning("لم تختار متدرب");
+        }
+        else
+        {
+            var res = ModalService.Show<Subscribe>("متأكد ", param, new ModalOptions { HideHeader = true, Size = ModalSize.Large, AnimationType = ModalAnimationType.FadeInOut });
+
+            var result = await res.Result;
+
+            if (result.Confirmed)
+            {
+                StateHasChanged();
+            }
+
+        }
+
+    }
+
+    string thenewvalue;
+
+    void NewSearch(ChangeEventArgs e)
+    {
+        TraineeInfoModels = DbContext.RegisterNewTraineeModel.Include(w => w.SubscribeTrainee).ToList();
+
+        if (TraineeModel != null && TraineeModel.SubscribeTrainee != null)
+        {
+            UnpaidForAllSubscribesList.Clear();
+            foreach (var sub in TraineeModel.SubscribeTrainee)
+            {
+                UnpaidForAllSubscribesList.Add(sub.Id, sub.Unpaid);
+            }
+        }
+
+
+
+        if (e.Value.ToString() != null && e.Value.ToString() != "")
+        {
+            var traineeFound = TraineeInfoModels.Where(W => W.Phone.Contains(e.Value.ToString(), StringComparison.OrdinalIgnoreCase))?.FirstOrDefault();
+
+            if (traineeFound != null)
+            {
+                TraineeModel = traineeFound;
+            }
+        }
+        else
+        {
+            TraineeModel = new TraineeInfoModel();
+            TraineeModel.Name = "";
+            TraineeModel.Note = "";
+            TraineeModel.AddedBy = "";
+            TraineeModel.SubscribeTrainee = new List<SubscribeModel>();
+            TraineeModel.Nationality = "";
+            TraineeModel.Phone = "";
+
+        }
+
+
+
+    }
+
+
+    private void SaveChanges()
+    {
+        try
+        {
+            var adminName = Auth.User.Identity.Name;
+            TraineeModel.AddedBy = adminName;
+
+            var pohnes = DbContext.RegisterNewTraineeModel.ToList();
+            foreach (var phone in pohnes)
+            {
+                if(phone.Phone == TraineeModel.Phone && TraineeModel.Id == 0)
+                {
+                    ToastService.ShowWarning("رقم الجوال موجود مسبقا");
+                    return;
+                } 
+            }
+
+            if (TraineeModel.Id == 0)
+            {
+                
+
+                // new trainee
+                DbContext.RegisterNewTraineeModel.Add(TraineeModel);
+
+
+            }
+            else
+            {
+                //update trainee
+                DbContext.RegisterNewTraineeModel.Update(TraineeModel);
+
+            }
+            TraineeModel = new TraineeInfoModel();
+            TraineeModel.Name = "";
+            TraineeModel.Note = "";
+            TraineeModel.AddedBy = "";
+            TraineeModel.SubscribeTrainee = new List<SubscribeModel>();
+            TraineeModel.Nationality = "";
+            TraineeModel.Phone = "";
+
+
+            DbContext.SaveChanges();
+            ToastService.ShowSuccess("تم الحفظ بنجاح");
+        }
+        catch (Exception e)
+        {
+            ToastService.ShowError("يوجد خطأ" + e.InnerException.Message);
+        }
+    }
+
+
+    private string _searchString;
+    private bool _sortNameByLength;
+    private List<string> _events = new();
+    // custom sort by name length
+    //private Func<SubscribeModel, object> _sortBy => x =>
+    //{
+    //    if (_sortNameByLength)
+    //        return x.Total.Length;
+    //    else
+    //        return x.Name;
+    //};
+    //// quick filter - filter gobally across multiple columns with the same input
+    //private Func<SubscribeModel, bool> _quickFilter => x =>
+    //{
+    //    if (string.IsNullOrWhiteSpace(_searchString))
+    //        return true;
+
+    //    if (x.Unpaid.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
+    //        return true;
+
+    //    if (x.Name.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
+    //        return true;
+
+    //    if ($"{x.Phone} {x.AddedBy} {x.Name}".Contains(_searchString))
+    //        return true;
+
+    //    return false;
+    //};
+
+
+
+    // events
+    void RowClicked(DataGridRowClickEventArgs<SubscribeModel> args)
+    {
+        try
+        {
+            _events.Insert(0, $"Event = RowClick, Index = {args.RowIndex}, Data = {System.Text.Json.JsonSerializer.Serialize(args.Item)}");
+        }
+        catch
+        {
+        }
+    }
+
+    void SelectedItemsChanged(HashSet<SubscribeModel> items)
+    {
+        try
+        {
+            _events.Insert(0, $"Event = SelectedItemsChanged, Data = {System.Text.Json.JsonSerializer.Serialize(items)}");
+        }
+        catch
+        {
+        }
+    }
+
+
+}

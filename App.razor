@@ -1,0 +1,27 @@
+﻿    <CascadingAuthenticationState>
+        <CascadingBlazoredModal HideHeader="true" >
+
+        <Router AppAssembly="@typeof(App).Assembly">
+            <Found Context="routeData">
+
+                <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
+
+
+                    <NotAuthorized>
+                        <RedirectToLogin NavTo="/login" />
+                    </NotAuthorized>
+                </AuthorizeRouteView>
+
+                <FocusOnNavigate RouteData="@routeData" Selector="h1" />
+            </Found>
+            <NotFound>
+                <PageTitle>Not found</PageTitle>
+                <LayoutView Layout="@typeof(MainLayout)">
+                    <p role="alert">عذرا يبدو انك ادخلت عنوان خاطئ</p>
+                </LayoutView>
+            </NotFound>
+        </Router>
+    </CascadingBlazoredModal>
+
+    </CascadingAuthenticationState>
+

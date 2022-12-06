@@ -1,0 +1,39 @@
+﻿
+
+
+<section class="u-clearfix u-grey-80 u-section-1" id="sec-94bb">
+    <div class="u-clearfix u-sheet u-sheet-1">
+        <h3 class="u-align-center u-text u-text-1">سوف يتم الحذف</h3>
+        <h3 class="u-align-center u-text u-text-2">هل انت متأكد ؟</h3>
+        <a @onclick="Confirm" class="u-border-none u-btn u-btn-round u-button-style u-palette-4-dark-1 u-radius-50 u-btn-1">نعم</a>
+        <a @onclick="(()=>Close())" style="margin:-39px 312px 60px auto;" class="u-border-none u-btn u-btn-round u-button-style u-hover-palette-1-light-1 u-palette-2-light-1 u-radius-50 u-btn-2">لا</a>
+    </div>
+</section>
+
+
+
+
+
+@code {
+    [CascadingParameter] BlazoredModalInstance BlazoredModal { get; set; } = default!;
+    [Inject]
+    public SubscribeRepository subscribeRepository { get; set; }
+    [Inject]
+    public IToastService toastService { get; set; }
+
+    [Parameter]
+    public SubscribeModel subscribeModel { get; set; }
+
+    private async Task Close() => await BlazoredModal.CloseAsync(ModalResult.Ok(true));
+
+
+    private void Confirm()
+    {
+        subscribeRepository.Delete(subscribeModel.Id);
+        Close();
+    }
+
+    
+
+
+    }

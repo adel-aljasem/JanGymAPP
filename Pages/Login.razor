@@ -1,0 +1,120 @@
+﻿@page "/login"
+@using JanGym.Authentication;
+@using JanGym.Data;
+@using Microsoft.AspNetCore.Identity;
+
+
+<AuthorizeView>
+    @{
+        Nav.NavigateTo("/");
+    }
+</AuthorizeView>
+
+
+
+<section class="u-clearfix u-image u-shading u-section-1" id="sec-d6fe" data-image-width="1280" data-image-height="720">
+    <div class="u-clearfix u-sheet u-sheet-1">
+        <div class="u-align-center u-container-style u-group u-shape-rectangle u-group-1">
+            <div class="u-container-layout u-container-layout-1">
+                <span class="u-align-center u-file-icon u-icon u-text-white u-icon-1"><img src="/css/images/747376-e872e00f.png" alt=""></span>
+                <h2 class="u-align-center u-text u-text-body-alt-color u-text-default u-text-1" data-lang-en="الدخول">الدخول</h2>
+                <div class="u-align-center u-form u-login-control u-form-1">
+
+                    <EditForm Model="adminModel" OnValidSubmit="LoginIn" class="u-clearfix u-form-custom-backend u-form-spacing-13 u-form-vertical u-inner-form" source="custom" name="form" style="padding: 0px;">
+                        <DataAnnotationsValidator />
+
+                        <div class="u-form-group u-form-name u-label-left">
+                            <label class="u-label u-text-white u-label-1" data-lang-en="الاسم">الاسم</label>
+                            <ValidationMessage For="() => adminModel.UserName" />
+
+                            <InputText @bind-Value="@adminModel.UserName" type="text" placeholder="ادخل اسم المستخدم" id="username-a30d" name="username" class="u-border-2 u-border-grey-10 u-grey-10 u-input u-input-rectangle u-radius-50 u-input-1" required="" data-lang-en="ادخل اسم المستخدم" />
+
+                        </div>
+
+                        <div class="u-form-group u-form-password u-label-left">
+                            <label class="u-label u-text-white u-label-2" data-lang-en="كلمة المرور">كلمة المرور</label>
+                            <InputText @bind-Value="@adminModel.Password" type="password" placeholder="ادخل كلمة المرور" id="password-a30d" name="password" class="u-border-2 u-border-grey-10 u-grey-10 u-input u-input-rectangle u-radius-50 u-input-2" required="" data-lang-en="ادخل كلمة المرور" />
+                        </div>
+
+                        <div class="u-form-group u-form-submit u-label-left">
+                            <label class="u-label u-label-4"></label>
+                            <div class="u-align-left u-btn-submit-container">
+                                <button type="submit" class="u-border-none u-btn u-btn-round u-btn-submit u-button-style u-hover-palette-4-light-1 u-palette-4-dark-1 u-radius-50 u-text-body-alt-color u-text-hover-black u-btn-1" data-lang-en="{&quot;content&quot;:&quot;دخـــــول<br>&quot;,&quot;href&quot;:&quot;#&quot;}">
+                                    دخـــــول<br>
+                                </button>
+                            </div>
+                        </div>
+                        <input type="hidden" value="" name="recaptchaResponse">
+                    </EditForm>
+
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+</section>
+
+
+
+
+@code {
+
+
+    [Inject]
+    public UserManager<IdentityUser> User { get; set; }
+    [Inject]
+    public SignInManager<IdentityUser> SignIn { get; set; }
+    [Inject]
+    public NavigationManager Nav { get; set; }
+
+    [Inject]
+    public AuthenticationStateProvider authenticationStateProvider { get; set; }
+    [Inject]
+    public IToastService ToastService { get; set; }
+    public UserInputModel adminModel { get; set; } = new UserInputModel();
+
+
+    protected async override Task OnInitializedAsync()
+    {
+
+    }
+
+
+    private async Task LoginIn()
+    {
+        var UserFound = await SignIn.UserManager.FindByNameAsync(adminModel.UserName);
+        if(UserFound == null)
+        {
+            ToastService.ShowError("لايوجد اسم مستخدم بهذا الاسم");
+
+            return;
+        }
+        var LoginSucceed = await SignIn.UserManager.CheckPasswordAsync(UserFound, adminModel.Password);
+        var roleCheck = await SignIn.UserManager.GetRolesAsync(UserFound);
+        if (LoginSucceed)
+        {
+            var customAuthStateProvider = (CustomAuthenticationStateProvider)authenticationStateProvider;
+            await customAuthStateProvider.UpdateAuthenticationState(new UserSession
+                {
+                    UserName = UserFound.UserName,
+                    Role = roleCheck.FirstOrDefault()
+                });
+
+            Nav.NavigateTo("/",true);
+
+            ToastService.ShowSuccess("تم تسجيل الدخول بنجاح");
+
+        }
+        else
+        {
+            ToastService.ShowError("كلمة المرور غير صحيحة");
+
+        }
+
+
+    }
+
+
+}

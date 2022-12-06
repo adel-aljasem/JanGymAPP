@@ -1,0 +1,53 @@
+﻿@page "/meassges"
+
+
+
+
+
+
+<section class="u-clearfix u-image u-shading u-section-1" id="sec-e8db" data-image-width="1280" data-image-height="832">
+    <div class="u-clearfix u-sheet u-sheet-1">
+        <div class="u-align-center u-container-style u-group u-shape-rectangle u-group-1">
+            <div class="u-container-layout u-container-layout-1">
+                <h1 class="u-text u-text-default u-text-grey-10 u-text-1">الرسائل الجماعية</h1>
+                <div class="u-align-center u-form u-form-1">
+                    <form action="https://forms.nicepagesrv.com/Form/Process" class="u-clearfix u-form-spacing-41 u-form-vertical u-inner-form" source="email" name="form" style="padding: 0px;">
+                        <div class="u-form-group u-form-message u-label-top u-form-group-1">
+                            <label for="text-723f" class="u-label u-label-1">الرسالة</label>
+                            <textarea placeholder="" id="text-723f" name="text-1" class="u-border-1 u-border-grey-30 u-grey-90 u-input u-input-rectangle u-radius-22 u-input-1" rows="9"></textarea>
+                        </div>
+                        <div class="u-align-center u-form-group u-form-submit u-label-top">
+                            <input type="submit" value="submit" class="u-form-control-hidden">
+                            <a href="#" class="u-btn u-btn-round u-btn-submit u-button-style u-palette-4-base u-radius-50 u-btn-1">
+                                ارسال<br>
+                            </a>
+                        </div>
+                        <div class="u-form-send-message u-form-send-success"> Thank you! Your message has been sent. </div>
+                        <div class="u-form-send-error u-form-send-message"> Unable to send your message. Please fix errors then try again. </div>
+                        <input type="hidden" value="" name="recaptchaResponse">
+                        <input type="hidden" name="formServices" value="e9f7d5cc5d85871f7e2d425d88d612ac">
+                    </form>
+                </div>
+                <a href="" class="u-btn u-btn-round u-button-style u-hover-palette-1-light-1 u-palette-1-base u-radius-50 u-btn-2">قائمة المرسلين</a>
+                <a href="" class="u-btn u-button-style u-hover-palette-3-base u-palette-2-base u-btn-3">
+                    <span class="u-icon u-text-white u-icon-1"><svg class="u-svg-content" viewBox="0 0 512 512" x="0px" y="0px" style="width: 1em; height: 1em;"><polygon points="256,152.96 79.894,288.469 79.894,470.018 221.401,470.018 221.401,336.973 296.576,336.973 296.576,470.018 432.107,470.018 432.107,288.469"></polygon><polygon points="439.482,183.132 439.482,90.307 365.316,90.307 365.316,126.077 256,41.982 0,238.919 35.339,284.855 256,115.062 476.662,284.856 512,238.92"></polygon></svg><img></span>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+@code {
+
+    private void SendMessage()
+    {
+        System.Diagnostics.Process.Start("http://api.whatapp.com/send?phone=" + 0503651725 + "&text" + "test message");
+
+    }
+
+    protected override void OnInitialized()
+    {
+        SendMessage();
+    }
+}
